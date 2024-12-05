@@ -1,71 +1,133 @@
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.uix.scrollview import ScrollView
+import tkinter as tk
+from tkinter import ttk
 
+# Main application window
+root = tk.Tk()
+root.title("Memory Companion - Professional UI")
+root.geometry("900x650")
+root.configure(bg="#f5f7fa")  # Soft light gray background for a modern look
 
-class MemoryBuddyApp(App):
-    def build(self):
-        self.medications = []
-        self.appointments = []
+# Define global style for widgets
+style = ttk.Style()
+style.theme_use("clam")  # Modern theme
+style.configure(
+    "TButton",
+    font=("Arial", 12),
+    padding=10,
+    background="#3b82f6",
+    foreground="white",
+    borderwidth=0,
+)
+style.configure(
+    "TLabel",
+    font=("Arial", 14),
+    background="#f5f7fa",
+    foreground="#374151",
+)
+style.configure(
+    "TEntry",
+    font=("Arial", 12),
+    padding=5,
+)
 
-        # Main layout
-        main_layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
+# List of application pages
+interfaces = [
+    "Welcome Page",
+    "Login Page",
+    "Registration Page",
+    "Home Page",
+    "Add Medication Page",
+    "Add Appointment Page",
+    "Medication Records Page",
+    "Guardian Information Page",
+    "Contact Doctor Page",
+]
 
-        # Medications section
-        main_layout.add_widget(Label(text="Add Medication", font_size=18))
-        self.med_name_input = TextInput(hint_text="Medication Name", multiline=False)
-        self.med_time_input = TextInput(hint_text="Medication Time (e.g., 08:00 AM)", multiline=False)
-        add_med_button = Button(text="Add Medication", size_hint=(1, 0.5), on_press=self.add_medication)
+# Clear window content for new page
+def clear_window():
+    for widget in root.winfo_children():
+        widget.destroy()
 
-        main_layout.add_widget(self.med_name_input)
-        main_layout.add_widget(self.med_time_input)
-        main_layout.add_widget(add_med_button)
+# Draw the page content
+def draw_interface(name):
+    clear_window()
 
-        # Appointments section
-        main_layout.add_widget(Label(text="Add Appointment", font_size=18))
-        self.app_type_input = TextInput(hint_text="Appointment Type (Doctor/Pharmacy)", multiline=False)
-        self.app_time_input = TextInput(hint_text="Appointment Date and Time (e.g., 2024-12-05 10:00 AM)", multiline=False)
-        add_app_button = Button(text="Add Appointment", size_hint=(1, 0.5), on_press=self.add_appointment)
+    # Header
+    header = tk.Frame(root, bg="#1e3a8a", height=80)
+    header.pack(fill="x", side="top")
+    header_label = tk.Label(
+        header, text=name, font=("Arial", 20, "bold"), bg="#1e3a8a", fg="white"
+    )
+    header_label.pack(pady=20)
 
-        main_layout.add_widget(self.app_type_input)
-        main_layout.add_widget(self.app_time_input)
-        main_layout.add_widget(add_app_button)
+    # Content area
+    content = tk.Frame(root, bg="#f5f7fa", padx=20, pady=20)
+    content.pack(fill="both", expand=True)
 
-        # Display area
-        self.display_area = ScrollView(size_hint=(1, 2))
-        self.display_layout = BoxLayout(orientation="vertical", size_hint_y=None)
-        self.display_layout.bind(minimum_height=self.display_layout.setter('height'))
-        self.display_area.add_widget(self.display_layout)
-        main_layout.add_widget(self.display_area)
+    if name == "Welcome Page":
+        ttk.Label(
+            content,
+            text="Welcome to Memory Companion",
+            font=("Arial", 18, "bold"),
+            anchor="center",
+        ).pack(pady=50)
+        ttk.Button(content, text="Get Started", command=next_interface).pack(pady=20)
 
-        return main_layout
+    elif name == "Login Page":
+        ttk.Label(content, text="Login to Your Account", font=("Arial", 16, "bold")).pack(pady=20)
+        ttk.Label(content, text="Username").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40).pack(pady=5)
+        ttk.Label(content, text="Password").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40, show="*").pack(pady=5)
+        ttk.Button(content, text="Login", command=next_interface).pack(pady=20)
 
-    def add_medication(self, instance):
-        med_name = self.med_name_input.text
-        med_time = self.med_time_input.text
+    elif name == "Registration Page":
+        ttk.Label(content, text="Create a New Account", font=("Arial", 16, "bold")).pack(pady=20)
+        ttk.Label(content, text="Name").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40).pack(pady=5)
+        ttk.Label(content, text="Email").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40).pack(pady=5)
+        ttk.Label(content, text="Password").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40, show="*").pack(pady=5)
+        ttk.Button(content, text="Register", command=next_interface).pack(pady=20)
 
-        if med_name and med_time:
-            self.medications.append(f"{med_name} - {med_time}")
-            self.update_display(f"Medication added: {med_name} at {med_time}")
-            self.med_name_input.text = ""
-            self.med_time_input.text = ""
+    elif name == "Home Page":
+        ttk.Label(content, text="Home", font=("Arial", 16, "bold")).pack(pady=20)
+        ttk.Button(content, text="Add Medication", width=30).pack(pady=10)
+        ttk.Button(content, text="Add Appointment", width=30).pack(pady=10)
+        ttk.Button(content, text="View Records", width=30).pack(pady=10)
 
-    def add_appointment(self, instance):
-        app_type = self.app_type_input.text
-        app_time = self.app_time_input.text
+    elif name == "Add Medication Page":
+        ttk.Label(content, text="Add New Medication", font=("Arial", 16, "bold")).pack(pady=20)
+        ttk.Label(content, text="Medication Name").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40).pack(pady=5)
+        ttk.Label(content, text="Dosage").pack(anchor="w", pady=5)
+        ttk.Entry(content, width=40).pack(pady=5)
+        ttk.Button(content, text="Submit").pack(pady=20)
 
-        if app_type and app_time:
-            self.appointments.append(f"{app_type} - {app_time}")
-            self.update_display(f"Appointment added: {app_type} at {app_time}")
-            self.app_type_input.text = ""
-            self.app_time_input.text = ""
+    # Navigation buttons
+    nav = tk.Frame(root, bg="#f5f7fa", pady=10)
+    nav.pack(side="bottom", fill="x")
+    ttk.Button(nav, text="Previous", command=prev_interface).pack(side="left", padx=20)
+    ttk.Button(nav, text="Next", command=next_interface).pack(side="right", padx=20)
 
-    def update_display(self, message):
-        self.display_layout.add_widget(Label(text=message, size_hint_y=None, height=40))
+# Navigation between pages
+current_index = 0
 
+def next_interface():
+    global current_index
+    if current_index < len(interfaces) - 1:
+        current_index += 1
+        draw_interface(interfaces[current_index])
 
-if _name_ == "_main_":
-    MemoryBuddyApp().run()
+def prev_interface():
+    global current_index
+    if current_index > 0:
+        current_index -= 1
+        draw_interface(interfaces[current_index])
+
+# Show the first page
+draw_interface(interfaces[current_index])
+
+# Run the application
+root.mainloop()
